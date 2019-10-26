@@ -3,9 +3,7 @@ import { withRouter } from 'react-router-dom'
 import { Link, BrowserRouter as Router, Switch, Route } from "react-router-dom"
 import { Navbar, Nav, Carousel, Form, FormControl, Button } from 'react-bootstrap';
 import './HomePage.css'
-import LoginPage from '../LoginPage/LoginPage'
 import NavbarComp from '../NavBar/NavBar'
-import fundit from '../../images/fundit.png'
 import books from '../../images/books.jpg'
 import game from '../../images/game.jpg'
 import movie from '../../images/movie.jpg'
@@ -26,7 +24,6 @@ class HomePage extends Component {
     render() {
         return (
             <div>
-
                 <NavbarComp />
                 <div style={{ display: 'flex', justifyContent: 'center', margin: "10px" }}>
                     {/* <div style={{textAlign:"center"}}> */}
@@ -90,5 +87,4 @@ class HomePage extends Component {
     }
 }
 
-// export default HomePage;
 export default withRouter(HomePage);

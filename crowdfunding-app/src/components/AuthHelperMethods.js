@@ -58,11 +58,11 @@ export default class AuthHelperMethods {
         localStorage.removeItem('id_token');
     }
 
-    getConfirm = () => {
+    getTokenData = () => {
         // Using jwt-decode npm package to decode the token
-        let answer = decode(this.getToken());
+        let data = decode(this.getToken());
         console.log("Recieved answer!");
-        return answer;
+        return data;
     }
 
     fetch = (url, options) => {

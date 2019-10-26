@@ -1,22 +1,25 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom'
 import { Link, BrowserRouter as Router } from "react-router-dom"
-import { Navbar, Nav, Button } from 'react-bootstrap';
+import { Navbar, Nav, Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import fundit from '../../images/fundit.png'
+import AuthHelperMethods from '../AuthHelperMethods';
 
 class NavbarComp extends Component {
+
     constructor(props) {
         super(props)
+        this.Auth = new AuthHelperMethods();
+        this.token = this.Auth.getToken()
+        
+    }
+
+    logout = () => {
+        this.Auth.logout();
     }
 
     loginArea = () => {
-        if (this.props.userName !== undefined) {
-            return (
-                <div>
-                    <p style={{color:"white"}}> Welcome, {this.props.userName}</p>
-                </div>
-            )
-        } else {
+        if (this.token === null) {
             return (
                 <div className="login">
                     <Link to="/login"><Button variant="outline-secondary">Login</Button></Link>
@@ -24,6 +27,19 @@ class NavbarComp extends Component {
                     &nbsp;
                 <Link to="/signup"><Button variant="outline-secondary">Sign Up</Button></Link>
                 </div>
+            )
+        } else {
+            let tokenData = this.Auth.getTokenData();
+
+            console.log(tokenData)
+            return (
+                <DropdownButton id="dropdown-basic-button" title={tokenData.name} variant="secondary" >
+                    <Dropdown.Item href="/profile">Profile</Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item >
+                        <p style={{ color: "red", marginBottom: "0px" }}>Logout</p>
+                    </Dropdown.Item>
+                </DropdownButton >
             )
         }
     }
@@ -42,12 +58,6 @@ class NavbarComp extends Component {
                             <Nav.Link href="/">Start a Project</Nav.Link>
                         </Nav>
                         {this.loginArea()}
-                        {/* <div className="login">
-                            <Link to="/login"><Button variant="outline-secondary">Login</Button></Link>
-                            &nbsp;
-                            &nbsp;
-                            <Link to="/signup"><Button variant="outline-secondary">Sign Up</Button></Link>
-                        </div> */}
                     </Navbar.Collapse>
                 </Navbar>
 
