@@ -5,6 +5,29 @@ import { Navbar, Nav, Button } from 'react-bootstrap';
 import fundit from '../../images/fundit.png'
 
 class NavbarComp extends Component {
+    constructor(props) {
+        super(props)
+    }
+
+    loginArea = () => {
+        if (this.props.userName !== undefined) {
+            return (
+                <div>
+                    <p style={{color:"white"}}> Welcome, {this.props.userName}</p>
+                </div>
+            )
+        } else {
+            return (
+                <div className="login">
+                    <Link to="/login"><Button variant="outline-secondary">Login</Button></Link>
+                    &nbsp;
+                    &nbsp;
+                <Link to="/signup"><Button variant="outline-secondary">Sign Up</Button></Link>
+                </div>
+            )
+        }
+    }
+
     render() {
         return (
             <div>
@@ -18,12 +41,13 @@ class NavbarComp extends Component {
                             <Nav.Link href="/">Explore</Nav.Link>
                             <Nav.Link href="/">Start a Project</Nav.Link>
                         </Nav>
-                        <div className="login">
+                        {this.loginArea()}
+                        {/* <div className="login">
                             <Link to="/login"><Button variant="outline-secondary">Login</Button></Link>
                             &nbsp;
                             &nbsp;
-                        <Link to="/signup"><Button variant="outline-secondary">Sign Up</Button></Link>
-                        </div>
+                            <Link to="/signup"><Button variant="outline-secondary">Sign Up</Button></Link>
+                        </div> */}
                     </Navbar.Collapse>
                 </Navbar>
 

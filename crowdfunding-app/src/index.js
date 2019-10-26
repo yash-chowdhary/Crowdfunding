@@ -8,8 +8,6 @@ import SignUpPage from './components/SignUpPage/SignUpPage'
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import routes from './routes'
-
 const routing = (
     <Router>
       <div>
