@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter, Link } from 'react-router-dom'
-import { Form, Button, Container, Row, Col } from "react-bootstrap"
+import { Form, Button} from "react-bootstrap"
 import NavbarComp from '../NavBar/NavBar'
 import './LoginPage.css'
 import AuthHelperMethods from '../AuthHelperMethods';

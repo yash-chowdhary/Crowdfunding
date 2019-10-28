@@ -5,6 +5,8 @@ import './index.css';
 import App from './App';
 import LoginPage from './components/LoginPage/LoginPage'
 import SignUpPage from './components/SignUpPage/SignUpPage'
+import StartProjectPage from './components/StartProjectPage/StartProjectPage'
+import ProjectDetailsPage from './components/ProjectDetailsPage/ProjectDetailsPage'
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -15,6 +17,8 @@ const routing = (
             <Route exact path="/" component={App} />
             <Route exact path="/login" component={LoginPage} />
             <Route path="/signup" component={SignUpPage} />
+            <Route path="/start" component={StartProjectPage} />
+            <Route path="/project" component={ProjectDetailsPage} />
         </Switch>
       </div>
     </Router>

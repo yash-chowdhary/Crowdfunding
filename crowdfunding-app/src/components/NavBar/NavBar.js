@@ -16,6 +16,7 @@ class NavbarComp extends Component {
 
     logout = () => {
         this.Auth.logout();
+        window.location.reload();
     }
 
     loginArea = () => {
@@ -36,7 +37,7 @@ class NavbarComp extends Component {
                 <DropdownButton id="dropdown-basic-button" title={tokenData.name} variant="secondary" >
                     <Dropdown.Item href="/profile">Profile</Dropdown.Item>
                     <Dropdown.Divider />
-                    <Dropdown.Item >
+                    <Dropdown.Item onClick={this.logout}>
                         <p style={{ color: "red", marginBottom: "0px" }}>Logout</p>
                     </Dropdown.Item>
                 </DropdownButton >
@@ -55,7 +56,7 @@ class NavbarComp extends Component {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
                             <Nav.Link href="/">Explore</Nav.Link>
-                            <Nav.Link href="/">Start a Project</Nav.Link>
+                            <Nav.Link href="/start">Start a Project</Nav.Link>
                         </Nav>
                         {this.loginArea()}
                     </Navbar.Collapse>
