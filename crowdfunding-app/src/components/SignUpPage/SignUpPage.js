@@ -6,11 +6,11 @@ import NavbarComp from '../NavBar/NavBar'
 import { Redirect } from 'react-router'
 
 class SignUpPage extends Component {
-    
+
     constructor(props) {
         super(props)
         this.state = {
-            
+
             data: undefined,
             show: false
         }
@@ -28,29 +28,41 @@ class SignUpPage extends Component {
 
     createUser = (event) => {
         event.preventDefault();
-        
+
         let form = event.target;
         const name = form.elements.name.value;
+        const username = form.elements.username.value;
         const email = form.elements.email.value;
         const password = form.elements.password.value;
+        const confirmPassword = form.elements.confirmpassword.value;
 
-        var self = this;
-        const data = {
-            'name': name,
-            'email': email,
-            'password': password
+        var re = /^\w+$/;
+        if (password.length < 6) {
+            alert("Password must be at least 6 characters")
+        } else if (password !== confirmPassword) {
+            alert("Passwords don't match!")
+        } else if (!re.test(username)) {
+            alert("Username must only contain letters, numbers and underscore(s)\ne.g. new_user123")
         }
+        else {
+            const data = {
+                'username': username,
+                'name': name,
+                'email': email,
+                'password': password
+            }
 
-        console.log(data)
-        axios.post('http://localhost:3003/signup', data)
-            .then((response) => {
-                this.props.history.push("/login")
+            console.log(data)
+            axios.post('http://localhost:3003/signup', data)
+                .then((response) => {
+                    this.props.history.push("/login")
 
-            })
-            .catch(error => {
-                console.log(error)
-                alert("User with the same email already exists!")
-            });
+                })
+                .catch(error => {
+                    console.log(error)
+                    alert("User with the same email already exists!")
+                });
+        }
     }
 
     render() {
@@ -64,13 +76,19 @@ class SignUpPage extends Component {
                             <Form.Group controlId="formBasicName">
                                 <Form.Control type="name" placeholder="Name" name="name" />
                             </Form.Group>
+                            <Form.Group controlId="formBasicName">
+                                <Form.Control type="text" placeholder="Username" name="username" />
+                            </Form.Group>
                             <Form.Group controlId="formBasicEmail">
                                 <Form.Control type="email" placeholder="Email" name="email" />
                             </Form.Group>
                             <Form.Group controlId="formBasicPassword">
                                 <Form.Control type="password" placeholder="Password" name="password" />
                             </Form.Group>
-                            <Button style={{ marginLeft:"40%",  }} variant="primary" type="submit">
+                            <Form.Group controlId="formBasicPassword">
+                                <Form.Control type="password" placeholder="Confirm Password" name="confirmpassword" />
+                            </Form.Group>
+                            <Button style={{ marginLeft: "40%", }} variant="primary" type="submit">
                                 Sign Up
                          </Button>
                         </FormGroup>

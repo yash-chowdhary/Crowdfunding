@@ -5,6 +5,7 @@ import { Link, BrowserRouter as Router, Switch, Route, Redirect } from "react-ro
 import { Container, Row, Col, Form, FormControl, Button } from 'react-bootstrap';
 import NavbarComp from '../NavBar/NavBar'
 import AuthHelperMethods from '../AuthHelperMethods';
+var moment = require('moment')
 
 class StartProjectPage extends Component {
     Auth = new AuthHelperMethods()
@@ -31,23 +32,32 @@ class StartProjectPage extends Component {
         const {team, title, description, goal, deadline, category, orgName} = this.state;
         let tokenData = this.Auth.getTokenData()
 
+        let org = orgName === null? '$Independent$': orgName.trim()
         let data = {
-            'team': team,
-            'title': title,
+            'team': team.trim(),
+            'title': title.trim(),
             'category': category,
-            'description': description,
+            'description': description.trim(),
             'goal': parseInt(goal),
             'deadline': deadline,
-            'email': tokenData.email,
-            'orgName': orgName
+            'username': tokenData.username,
+            'orgName': org
         }
 
+        let enteredDate = moment(this.state.deadline).format("YYYY-MM-DD")
+        let currentDateString = moment().get('year')+"-"+(moment().get('month')+1)+"-"+moment().get('date');
+        let currentDate = moment(currentDateString).format("YYYY-MM-DD")
+
+        let isAfter = moment(enteredDate).isAfter(currentDate)
+
+        if (!isAfter) {
+            alert(`Please enter a date in the future, i.e. after ${moment(currentDate).format("DD-MM-YYYY")}`)
+            return
+        }
         axios.post('http://localhost:3003/start', data)
         .then((response) => {
             this.props.history.push({
-                pathname:"/project",
-                state: {data: data},
-                search: `?teamname=${team}&projName=${title}`
+                pathname:`/projects/${tokenData.username}/${org}/${team}/${title}/edit`,
             })
         })
         .catch((error) => {
@@ -92,8 +102,6 @@ class StartProjectPage extends Component {
         if (JSON.stringify(prevState) !== JSON.stringify(this.state)) {
             const { title, description, team, deadline, goal, hideOrg, orgName } = this.state
             let isUnfilled = title == '' || description == '' || team == '' || deadline == '' || goal == '' || (!hideOrg && orgName === null)
-            // console.log(`title is ${title}`);
-            // console.log(`isunfilled is ${isUnfilled}`);
             this.setState({
                 formInvalid: isUnfilled
             })
@@ -166,7 +174,7 @@ class StartProjectPage extends Component {
                                         : null
                                     }
                                 </Form.Group>
-                                <Button variant="dark" type="submit" disabled={this.state.formInvalid}>
+                                <Button style={{justifyItems:"center"}}  variant="dark" type="submit" disabled={this.state.formInvalid}>
                                     Create Project
                                 </Button>
                             </Form>

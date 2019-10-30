@@ -19,13 +19,13 @@ class LoginPage extends Component {
         this.Auth.login(email, password)
             .then(res => {
                 if (res === false) {
-                    return alert("Sorry those credentials don't exist!");
+                    return alert("Invalid Credentials!");
                 }
                 this.props.history.push('/');
             })
             .catch(err => {
                 console.log(err)
-                alert("Invalid Credentials");
+                alert("Invalid Credentials!");
             })
 
     }

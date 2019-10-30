@@ -6,7 +6,9 @@ import App from './App';
 import LoginPage from './components/LoginPage/LoginPage'
 import SignUpPage from './components/SignUpPage/SignUpPage'
 import StartProjectPage from './components/StartProjectPage/StartProjectPage'
-import ProjectDetailsPage from './components/ProjectDetailsPage/ProjectDetailsPage'
+import DisplayProjectDetailsPage from './components/DisplayProjectDetailsPage/DisplayProjectDetailsPage'
+import EditProjectDetailsPage from './components/EditProjectDetailsPage/EditProjectDetailsPage'
+import FundProjectPage from './components/FundProjectPage/FundProjectPage'
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -18,7 +20,9 @@ const routing = (
             <Route exact path="/login" component={LoginPage} />
             <Route path="/signup" component={SignUpPage} />
             <Route path="/start" component={StartProjectPage} />
-            <Route path="/project" component={ProjectDetailsPage} />
+            <Route path="/projects/:username/:orgName/:teamName/:projName/edit" component={EditProjectDetailsPage} />
+            <Route path="/projects/:username/:orgName/:teamName/:projName" component={DisplayProjectDetailsPage} />
+            <Route path="/fund/:username/:orgName/:teamName/:projName" component={FundProjectPage} />
         </Switch>
       </div>
     </Router>
