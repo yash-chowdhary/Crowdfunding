@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom'
 import { Link, BrowserRouter as Router, Switch, Route } from "react-router-dom"
-import { Navbar, Nav, Carousel, Form, FormControl, Button } from 'react-bootstrap';
+import { Tooltip, OverlayTrigger, Carousel, Form, FormControl, Button } from 'react-bootstrap';
 import './HomePage.css'
 import NavbarComp from '../NavBar/NavBar'
 import books from '../../images/books.jpg'
@@ -34,9 +34,24 @@ class HomePage extends Component {
                     {/* </div> */}
                 </div>
                 <Divider color="gray" />
-                <div className="sub-heading">
-                    <p style={{ color: "gray", fontFamily: "sans-serif" }} > Featured Projects </p>
+                <div style={{display:'flex', justifyContent:"center", alignContent:"center"}}>
+                    <OverlayTrigger
+                        key="right"
+                        placement="right"
+                        overlay={
+                            <Tooltip id="tooltip-right">
+                                Projects that have been funded the most
+                        </Tooltip>
+                        }
+                        >
+
+                        <p style={{ color: "gray", fontFamily: "sans-serif" }} > Featured Projects </p>
+
+                    </OverlayTrigger>
                 </div>
+                {/* <div className="sub-heading">
+                    <p style={{ color: "gray", fontFamily: "sans-serif" }} > Featured Projects </p>
+                </div> */}
                 <div style={{ textAlign: "center" }}>
                     <div style={{
                         margin: "5px",

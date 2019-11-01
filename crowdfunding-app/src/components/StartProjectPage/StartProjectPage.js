@@ -70,6 +70,7 @@ class StartProjectPage extends Component {
     componentDidMount() {
         axios.get('http://localhost:3003/categories')
             .then((response) => {
+                console.log(response.data);
                 this.setState({
                     values: response.data,
                 })
@@ -119,7 +120,11 @@ class StartProjectPage extends Component {
 
     render() {
         if (!this.Auth.loggedIn()) {
-            this.props.history.replace('/login')
+            // this.props.history.replace('/login')
+            this.props.history.push({
+                pathname: '/login',
+                state: { redirectUrl: "/start" }
+            })
         }
         const shouldHideOrg = this.state.hideOrg;
         console.log(shouldHideOrg);

@@ -57,7 +57,7 @@ class FundProjectPage extends Component {
 
                 setTimeout(() => {
                     this.props.history.push({
-                        pathname: `/projects/${details.username}/${details.orgname}/${details.teamname}/${details.projname}/`
+                        pathname: `/projects/${details.username}/${details.orgname}/${details.teamname}/${details.projname}`
                     })
                 }, 3000)
 
@@ -126,7 +126,13 @@ class FundProjectPage extends Component {
 
     render() {
         if (!this.Auth.loggedIn()) {
-            this.props.history.replace('/login')
+            if (this.state.projectData !== null || this.state.projectData !== undefined) {
+                const details = this.state.projectData
+                this.props.history.push({
+                    pathname: '/login',
+                    state: { redirectUrl: `/fund/${details.username}/${details.orgname}/${details.teamname}/${details.projname}` }
+                })
+            }
         }
         let details = this.state.projectData;
         return (

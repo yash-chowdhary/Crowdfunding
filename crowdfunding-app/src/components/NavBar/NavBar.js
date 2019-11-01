@@ -19,6 +19,13 @@ class NavbarComp extends Component {
         window.location.reload();
     }
 
+    redirectToProfile = () => {
+        const userDetails = this.Auth.getTokenData()
+        this.props.history.push({
+            pathname: `/profile/${userDetails.username}`
+        })
+    }
+
     loginArea = () => {
         if (this.token === null) {
             return (
@@ -35,7 +42,7 @@ class NavbarComp extends Component {
             console.log(tokenData)
             return (
                 <DropdownButton id="dropdown-basic-button" title={tokenData.name} variant="secondary" >
-                    <Dropdown.Item href="/profile">Profile</Dropdown.Item>
+                    <Dropdown.Item onClick={this.redirectToProfile}>Profile</Dropdown.Item>
                     <Dropdown.Divider />
                     <Dropdown.Item onClick={this.logout}>
                         <p style={{ color: "red", marginBottom: "0px" }}>Logout</p>

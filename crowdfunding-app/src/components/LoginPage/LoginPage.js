@@ -6,6 +6,13 @@ import './LoginPage.css'
 import AuthHelperMethods from '../AuthHelperMethods';
 
 class LoginPage extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            redirectUrl: "/"
+        }
+    }
+
     Auth = new AuthHelperMethods();
 
     login = (event) => {
@@ -16,18 +23,29 @@ class LoginPage extends Component {
         const password = form.elements.password.value;
 
         console.log(`Attempting login with ${email} and ${password}`);
+        console.log(`Redirecting to ${this.state.redirectUrl}`);
+        
         this.Auth.login(email, password)
             .then(res => {
                 if (res === false) {
                     return alert("Invalid Credentials!");
                 }
-                this.props.history.push('/');
+                this.props.history.push(this.state.redirectUrl);
             })
             .catch(err => {
                 console.log(err)
                 alert("Invalid Credentials!");
             })
 
+    }
+
+    componentDidMount() {
+        const passedState = this.props.location.state
+        if (passedState !== undefined && passedState !== null) {
+            this.setState({
+                redirectUrl: passedState.redirectUrl
+            })
+        }
     }
 
     render() {

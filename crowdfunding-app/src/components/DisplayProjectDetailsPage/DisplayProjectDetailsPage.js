@@ -15,33 +15,133 @@ class DisplayProjectDetailsPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            projectData: null
+            projectData: null,
+            follows: false,
+            // curStatus: 'In Progress'
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        let curUser = this.Auth.getTokenData().username;
         const { username, orgName, teamName, projName } = this.props.match.params
+
+
+        axios.get(`http://localhost:3003/user/${curUser}`)
+            .then(response => {
+                let data = response.data
+                console.log('user data:')
+                console.log(data.followed);
+
+                let found = false
+                data.followed.forEach(proj => {
+                    if (proj.creator === username
+                        && proj.orgname === orgName && proj.teamname === teamName && proj.projname === projName) {
+                        found = true
+                    }
+                })
+                if (found) {
+                    console.log('Setting follows to true');
+                    this.setState({
+                        follows: found
+                    })
+                }
+            })
+
         console.log(`http://localhost:3003/projects/${username}/${orgName}/${teamName}/${projName}`);
+        
+        var postData = null
         axios.get(`http://localhost:3003/projects/${username}/${orgName}/${teamName}/${projName}`)
             .then((response) => {
                 console.log((response.data));
                 let data = response.data;
+                let daysToDeadline = this.getDaysToDeadline(data)
+                if (daysToDeadline <= 0 && data.status === 'In Progress') {
+                    console.log('changing status');
+                    if (data.curfunds < data.goal) {
+                        data.status = 'Abandoned'
+                    } else {
+                        data.status = 'Complete'
+                    }
+                    // set the status
+                    postData = {
+                        username: username,
+                        orgname: orgName,
+                        teamname: teamName,
+                        projname: projName,
+                        status: data.status
+                    }
+                }
+                console.log(data.status);
                 this.setState({
                     projectData: data
                 })
+                if (postData !== null) {
+                    return axios.post(`http://localhost:3003/setStatus`, postData)
+                }
             })
+            .then(response => {
+                console.log('status changed');
+            })
+            .catch(error => {
+                alert(error)
+            })
+    }
+
+    followUnfollowProject = () => {
+        let data = this.state.projectData;
+        let curUser = this.Auth.getTokenData().username;
+        if (this.state.follows) {
+            axios.delete(`http://localhost:3003/follow/${curUser}/${data.username}/${data.orgname}/${data.teamname}/${data.projname}`)
+                .then(response => {
+                    console.log('unfollowed');
+                    let curState = this.state.follows
+                    this.setState({
+                        follows: !curState
+                    })
+                })
+                .catch(error => {
+                    console.log('error');
+                })
+        } else {
+            let postData = {
+                follower: curUser,
+                creator: data.username,
+                orgname: data.orgname,
+                teamname: data.teamname,
+                projname: data.projname
+            }
+            axios.post('http://localhost:3003/follow', postData)
+                .then(response => {
+                    console.log('followed');
+                    let curState = this.state.follows
+                    this.setState({
+                        follows: !curState
+                    })
+                })
+                .catch(error => {
+                    console.log('error');
+                })
+        }
+
     }
 
     renderFollowButton = (details) => {
         let curUser = this.Auth.getTokenData().username;
-        if (curUser !== details.username) {
+        let renderText = "Follow"
+        if (this.state.follows) {
+            renderText = "Unfollow"
+        }
+        console.log(curUser);
+        console.log(details.username);
+
+        if (curUser === details.username || this.state.follows) {
+            return null;
+        } else {
             return (
-                <Button style={{ width: "100%", border: "1px solid black" }} variant="Light" type="submit">
-                    Follow
+                <Button style={{ width: "100%", border: "1px solid black" }} variant="Light" onClick={this.followUnfollowProject}>
+                    {renderText}
                 </Button>
             )
-        } else {
-            return null;
         }
     }
 
@@ -61,6 +161,38 @@ class DisplayProjectDetailsPage extends Component {
 
         var deadlineObj = moment(details.deadline).tz("Asia/Singapore")
         return moment.duration(deadlineObj.diff(currentDateObj)).asDays();
+    }
+
+    renderBackOrStatus = (details) => {
+        console.log(details.status);
+        
+        if (details.status === 'In Progress') {
+            return (
+                <div>
+                    <div className="div-stats">
+                        <h3 className="generic-h3-stats">{this.getDaysToDeadline(details)} </h3>
+                        <p className="generic-p-stats">day{this.getDaysToDeadline(details) > 1 ? 's' : null} to go</p>
+                    </div>
+    
+                    <Button style={{ width: "100%" }} variant="success" type="submit" onClick={this.redirectToFundPage}>
+                        Back this project
+                    </Button>
+                </div>
+            )
+        } else if (details.status === 'Complete') {
+            return (
+                <div>
+                    <h3 className="h3-complete">Project Funding Complete!</h3>
+                </div>
+            )
+        } else {
+
+            return (
+                <div>
+                    <h3 className="h3-abandoned">Project Funding Abandoned!</h3>
+                </div>
+            )
+        }
     }
 
     renderProjectData = () => {
@@ -97,14 +229,15 @@ class DisplayProjectDetailsPage extends Component {
                                         <p className="generic-p-stats">backers </p>
                                     </div>
 
-                                    <div className="div-stats">
+                                    {/* <div className="div-stats">
                                         <h3 className="generic-h3-stats">{this.getDaysToDeadline(details)} </h3>
                                         <p className="generic-p-stats">day{this.getDaysToDeadline(details) > 1 ? 's' : null} to go</p>
                                     </div>
 
                                     <Button style={{ width: "100%" }} variant="success" type="submit" onClick={this.redirectToFundPage}>
                                         Back this project
-                                    </Button>
+                                    </Button> */}
+                                    {this.renderBackOrStatus(details)}
                                 </div>
 
                                 {this.renderFollowButton(details)}
@@ -127,7 +260,12 @@ class DisplayProjectDetailsPage extends Component {
 
     render() {
         if (!this.Auth.loggedIn()) {
-            this.props.history.replace('/login')
+            // this.props.history.replace('/login')
+            const { username, orgName, teamName, projName } = this.props.match.params
+            this.props.history.push({
+                pathname: '/login',
+                state: { redirectUrl: `/projects/${username}/${orgName}/${teamName}/${projName}` }
+            })
         }
         return (
             <div>

@@ -8,6 +8,14 @@
     margin-top: 0%;
 }
 
+.h3-complete {
+    color: green
+}
+
+.h3-abandoned {
+    color: red
+}
+
 .generic-h3-stats {
     margin-top: 2%;
     margin-bottom: 0%;

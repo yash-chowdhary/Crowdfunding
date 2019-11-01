@@ -96,9 +96,9 @@ class SignUpPage extends Component {
                     <p style={{ textAlign: "center", marginTop: "5px" }}>
                         Already have an account? <Link to="/login">Login</Link>
                     </p>
-                    <Toast onClose={() => this.setShow(false)} show={this.state.show} delay={3000} autohide>
+                    {/* <Toast onClose={() => this.setShow(false)} show={this.state.show} delay={3000} autohide>
                         <Toast.Body>Unable to sign up! {this.state.errorMessage}</Toast.Body>
-                    </Toast>
+                    </Toast> */}
                 </div>
             </div>
         )
