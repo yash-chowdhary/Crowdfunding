@@ -231,6 +231,7 @@ class DisplayProjectDetailsPage extends Component {
                         Back this project
                     </Button>
                     {this.renderWithdrawButton(details)}
+                    {this.renderFollowButton(details)}
                 </div>
             )
         } else if (details.status === 'Complete') {
@@ -297,7 +298,7 @@ class DisplayProjectDetailsPage extends Component {
                                     {this.renderBackOrStatus(details)}
                                 </div>
 
-                                {this.renderFollowButton(details)}
+                                
                                 
 
                                 <div style={{ marginTop: "2%" }}>
