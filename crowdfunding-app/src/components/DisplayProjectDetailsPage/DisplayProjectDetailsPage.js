@@ -17,11 +17,13 @@ class DisplayProjectDetailsPage extends Component {
         this.state = {
             projectData: null,
             follows: false,
-            // curStatus: 'In Progress'
+            hasFunded: false
         }
     }
 
     async componentDidMount() {
+        console.log('back here at display project page')
+        if (!this.Auth.loggedIn()) {return}
         let curUser = this.Auth.getTokenData().username;
         const { username, orgName, teamName, projName } = this.props.match.params
 
@@ -33,10 +35,17 @@ class DisplayProjectDetailsPage extends Component {
                 console.log(data.followed);
 
                 let found = false
+                let hasFunded = false
                 data.followed.forEach(proj => {
                     if (proj.creator === username
                         && proj.orgname === orgName && proj.teamname === teamName && proj.projname === projName) {
                         found = true
+                    }
+                })
+                data.backed.forEach(proj => {
+                    if (proj.creator === username
+                        && proj.orgname === orgName && proj.teamname === teamName && proj.projname === projName) {
+                        hasFunded = true
                     }
                 })
                 if (found) {
@@ -45,10 +54,16 @@ class DisplayProjectDetailsPage extends Component {
                         follows: found
                     })
                 }
+                if (hasFunded) {
+                    console.log('Setting hasFunded to true');
+                    this.setState({
+                        hasFunded: hasFunded
+                    })
+                }
             })
 
         console.log(`http://localhost:3003/projects/${username}/${orgName}/${teamName}/${projName}`);
-        
+
         var postData = null
         axios.get(`http://localhost:3003/projects/${username}/${orgName}/${teamName}/${projName}`)
             .then((response) => {
@@ -122,7 +137,32 @@ class DisplayProjectDetailsPage extends Component {
                     console.log('error');
                 })
         }
+    }
 
+    withdrawFunding = () => {
+        let data = this.state.projectData;
+        let curUser = this.Auth.getTokenData().username;
+        let postData = {
+            backer: curUser,
+            creator: data.username,
+            orgname: data.orgname,
+            teamname: data.teamname,
+            projname: data.projname
+        }
+        axios.post(`http://localhost:3003/withdraw`, postData)
+            .then(response => {
+                console.log(response.data);
+                console.log(response.data.amount);
+                alert(`You have withdrawn S$ ${response.data.amount} from this project`)
+
+                setTimeout(() => {
+                    window.location.reload()
+                }, 3000)
+                
+            })
+            .catch(error => {
+                alert(`Error!`)
+            })
     }
 
     renderFollowButton = (details) => {
@@ -134,7 +174,7 @@ class DisplayProjectDetailsPage extends Component {
         console.log(curUser);
         console.log(details.username);
 
-        if (curUser === details.username || this.state.follows) {
+        if (curUser === details.username) {
             return null;
         } else {
             return (
@@ -143,6 +183,19 @@ class DisplayProjectDetailsPage extends Component {
                 </Button>
             )
         }
+    }
+
+    renderWithdrawButton = (details) => {
+        let curUser = this.Auth.getTokenData().username;
+        let renderText = "Withdraw Funding"
+        if (!this.state.hasFunded) {
+            return null;
+        }
+        return (
+            <Button style={{ width: "100%", marginTop:"2%" }} variant="danger" onClick={this.withdrawFunding}>
+                {renderText}
+            </Button>
+        )
     }
 
     redirectToFundPage = () => {
@@ -165,7 +218,7 @@ class DisplayProjectDetailsPage extends Component {
 
     renderBackOrStatus = (details) => {
         console.log(details.status);
-        
+
         if (details.status === 'In Progress') {
             return (
                 <div>
@@ -173,10 +226,11 @@ class DisplayProjectDetailsPage extends Component {
                         <h3 className="generic-h3-stats">{this.getDaysToDeadline(details)} </h3>
                         <p className="generic-p-stats">day{this.getDaysToDeadline(details) > 1 ? 's' : null} to go</p>
                     </div>
-    
+
                     <Button style={{ width: "100%" }} variant="success" type="submit" onClick={this.redirectToFundPage}>
                         Back this project
                     </Button>
+                    {this.renderWithdrawButton(details)}
                 </div>
             )
         } else if (details.status === 'Complete') {
@@ -205,6 +259,18 @@ class DisplayProjectDetailsPage extends Component {
                 <div style={{ textAlign: "center" }}>
                     <h2>{details.projname}</h2>
                     <h5>{details.description}</h5>
+                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignContent: "center" }}>
+                        <h6>Creator: @{details.username}</h6>
+                        &nbsp;
+                        &nbsp;
+                        <h6>Org: {details.orgname === '$Independent$' ? `Independent` : details.orgname}</h6>
+                        &nbsp;
+                        &nbsp;
+                        <h6>Team: {details.teamname}</h6>
+                        &nbsp;
+                        &nbsp;
+                        <h6>Category: {details.categories}</h6>
+                    </div>
                 </div>
                 <Container style={{ marginTop: "3%" }}>
                     <Row>
@@ -226,21 +292,13 @@ class DisplayProjectDetailsPage extends Component {
 
                                     <div className="div-stats">
                                         <h3 className="generic-h3-stats">{details.numbackers} </h3>
-                                        <p className="generic-p-stats">backers </p>
+                                        <p className="generic-p-stats">backer{details.numbackers > 1 ? 's' : null} </p>
                                     </div>
-
-                                    {/* <div className="div-stats">
-                                        <h3 className="generic-h3-stats">{this.getDaysToDeadline(details)} </h3>
-                                        <p className="generic-p-stats">day{this.getDaysToDeadline(details) > 1 ? 's' : null} to go</p>
-                                    </div>
-
-                                    <Button style={{ width: "100%" }} variant="success" type="submit" onClick={this.redirectToFundPage}>
-                                        Back this project
-                                    </Button> */}
                                     {this.renderBackOrStatus(details)}
                                 </div>
 
                                 {this.renderFollowButton(details)}
+                                
 
                                 <div style={{ marginTop: "2%" }}>
                                     <p className="p-fineprint">
@@ -260,7 +318,8 @@ class DisplayProjectDetailsPage extends Component {
 
     render() {
         if (!this.Auth.loggedIn()) {
-            // this.props.history.replace('/login')
+            console.log('redirecting to login page');
+            
             const { username, orgName, teamName, projName } = this.props.match.params
             this.props.history.push({
                 pathname: '/login',
