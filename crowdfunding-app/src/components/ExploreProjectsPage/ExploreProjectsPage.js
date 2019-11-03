@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom'
 import { Link, BrowserRouter as Router, Switch, Route } from "react-router-dom"
-import { Tab, Tabs, Container, Row, Col } from 'react-bootstrap';
+import { Tab, Tabs, Container, Row, Col, ListGroup } from 'react-bootstrap';
 import AuthHelperMethods from '../AuthHelperMethods';
 import NavbarComp from '../NavBar/NavBar'
 
@@ -38,10 +38,10 @@ class ExploreProjectsPage extends Component {
         }
         return (
             <div style={{ marginTop: "3%" }}>
-                <div style={{marginLeft:"1.85%"}}>
+                <div style={{marginLeft:"20px"}}>
                     <h3>Projects: </h3>
                 </div>
-                <ol>
+                {/* <ol>
                     {
                         details.map((proj, index) => {
                             return <li key={index}>
@@ -57,7 +57,24 @@ class ExploreProjectsPage extends Component {
                             </li>
                         })
                     }
-                </ol>
+                </ol> */}
+                <ListGroup>
+                    {
+                        details.map((proj, index) => {
+                            return <ListGroup.Item key={index}>
+                                <div>
+                                    <Link to={`/projects/${proj.username}/${proj.orgname}/${proj.teamname}/${proj.projname}`} >
+                                        {proj.projname}
+                                    </Link>
+                                    <h6>{proj.description}</h6>
+                                    <h6>Creator: {proj.username} </h6>
+                                    <h6>Org: {proj.orgname === '$Independent$'? 'Independent': proj.orgname} </h6>
+                                    <h6>Category: {proj.categories}</h6>
+                                </div>
+                            </ListGroup.Item>
+                        })
+                    }
+                </ListGroup>
             </div>
         )
     }

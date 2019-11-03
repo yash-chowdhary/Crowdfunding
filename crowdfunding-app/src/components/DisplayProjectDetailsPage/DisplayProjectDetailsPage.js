@@ -2,12 +2,28 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom'
 import { Link, BrowserRouter as Router, Switch, Route } from "react-router-dom"
-import { Container, Row, Col, Button, ProgressBar } from 'react-bootstrap';
+import { Container, Row, Col, Button, ProgressBar, Tab, Tabs, Form, Card } from 'react-bootstrap';
 import AuthHelperMethods from '../AuthHelperMethods';
 import NavbarComp from '../NavBar/NavBar'
 import books from '../../images/books.jpg'
+import game from '../../images/game.jpg'
+import movie from '../../images/movie.jpg'
 import './DisplayProjectDetailsPage.css'
 var moment = require('moment-timezone');
+
+const images = [books, game, movie]
+
+const Divider = ({ color }) => (
+    <hr
+        style={{
+            color: color,
+            backgroundColor: color,
+            height: 0.1
+        }}
+    />
+);
+
+const noProjectAbout = 'The creator hasn\'t provided a detailed description of this project.'
 
 class DisplayProjectDetailsPage extends Component {
     Auth = new AuthHelperMethods()
@@ -17,13 +33,57 @@ class DisplayProjectDetailsPage extends Component {
         this.state = {
             projectData: null,
             follows: false,
-            hasFunded: false
+            hasFunded: false,
+            validComment: false,
+            comment: '',
+            projectComments: []
+        }
+    }
+
+    handleUserInput = (e) => {
+        e.preventDefault()
+        const name = e.target.name;
+        const value = e.target.value;
+        console.log(`output: ${name} ${value}`);
+        this.setState({ [name]: value });
+    }
+
+    submitComment = () => {
+        let details = this.state.projectData
+
+        let postData = {
+            commentor: this.Auth.getTokenData().username,
+            creator: details.username,
+            orgname: details.orgname,
+            teamname: details.teamname,
+            projname: details.projname,
+            comment: this.state.comment
+        }
+        axios.post('http://localhost:3003/comment', postData)
+            .then(response => {
+                console.log(response.data);
+                this.props.history.push(`/projects/${details.username}/${details.orgname}/${details.teamname}/${details.projname}`)
+            })
+            .catch(error => {
+                console.log(error.response.data);
+                alert(error.response.data)
+            })
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        console.log(this.state);
+        if (JSON.stringify(prevState) !== JSON.stringify(this.state)) {
+            const { comment } = this.state
+            let isInvalid = comment == ''
+            this.setState({
+                validComment: !isInvalid
+            })
         }
     }
 
     async componentDidMount() {
         console.log('back here at display project page')
-        if (!this.Auth.loggedIn()) {return}
+        if (!this.Auth.loggedIn()) { return }
         let curUser = this.Auth.getTokenData().username;
         const { username, orgName, teamName, projName } = this.props.match.params
 
@@ -100,6 +160,17 @@ class DisplayProjectDetailsPage extends Component {
             .catch(error => {
                 alert(error)
             })
+
+        axios.get(`http://localhost:3003/comments/${username}/${orgName}/${teamName}/${projName}`)
+            .then(response => {
+                let comments = response.data
+                this.setState({
+                    projectComments: comments
+                })
+            })
+            .catch(error => {
+                alert(error)
+            })
     }
 
     followUnfollowProject = () => {
@@ -158,7 +229,7 @@ class DisplayProjectDetailsPage extends Component {
                 setTimeout(() => {
                     window.location.reload()
                 }, 3000)
-                
+
             })
             .catch(error => {
                 alert(`Error!`)
@@ -192,9 +263,33 @@ class DisplayProjectDetailsPage extends Component {
             return null;
         }
         return (
-            <Button style={{ width: "100%", marginTop:"2%" }} variant="danger" onClick={this.withdrawFunding}>
+            <Button style={{ width: "100%", marginTop: "2%" }} variant="danger" onClick={this.withdrawFunding}>
                 {renderText}
             </Button>
+        )
+    }
+
+    renderComments = () => {
+        let comments = this.state.projectComments;
+        return (
+            <div style={{ marginTop: "2%" }}>
+                {
+                    comments.map((commentObj, index) => {
+                        const datetime = moment(moment.unix(commentObj.timestamp).toDate()).format('MMM Do YYYY, hh:mm a')
+                        console.log(datetime);
+
+                        return <Card style={{ marginTop: "1%" }} key={index}>
+                            <Card.Body>
+                                <Card.Title>@{commentObj.commentor}</Card.Title>
+                                <Card.Subtitle className="mb-2 text-muted">{datetime}</Card.Subtitle>
+                                <Card.Body>
+                                    {commentObj.comment}
+                                </Card.Body>
+                            </Card.Body>
+                        </Card>
+                    })
+                }
+            </div>
         )
     }
 
@@ -255,6 +350,7 @@ class DisplayProjectDetailsPage extends Component {
             return null;
         }
         let details = this.state.projectData;
+        let randomImage = Math.floor(Math.random() * 3)
         return (
             <div style={{ marginTop: "1%" }}>
                 <div style={{ textAlign: "center" }}>
@@ -277,8 +373,8 @@ class DisplayProjectDetailsPage extends Component {
                     <Row>
                         <Col >
                             <img
-                                src={books}
-                                alt="books"
+                                src={images[randomImage]}
+                                alt="img"
                                 style={{ width: 750, height: 450 }}
                             />
                         </Col>
@@ -297,21 +393,50 @@ class DisplayProjectDetailsPage extends Component {
                                     </div>
                                     {this.renderBackOrStatus(details)}
                                 </div>
-
-                                
-                                
-
                                 <div style={{ marginTop: "2%" }}>
                                     <p className="p-fineprint">
                                         All or nothing funding. This project will only be funded if it reaches its goal by {moment(details.deadline).format("dddd, MMMM Do YYYY")} 0000 hrs SGT.
                                     </p>
                                 </div>
                             </div>
-
-
                         </Col>
                     </Row>
+                </Container>
 
+                <Container>
+                    <Row>
+                        <Col>
+                            <Divider color="gray" />
+                            <Tabs defaultActiveKey="details" id="uncontrolled-tab-example">
+                                <Tab eventKey="about" title="About">
+                                    {/* <div style ={{textAlign: "center"}}><h4>Hi</h4></div> */}
+                                    <div style={{ marginTop: "3%" }}>
+                                        <p>{this.state.projectData.about === null ? noProjectAbout : this.state.projectData.about}</p>
+                                    </div>
+                                    {/* {this.renderProjects(data, 'created')} */}
+                                </Tab>
+                                <Tab eventKey="rewards" title="Rewards">
+                                    <h3>Rewards</h3>
+                                    {/* {this.renderProjects(data, 'backed')} */}
+                                </Tab>
+                                <Tab eventKey="comments" title="Comments">
+                                    <div style={{ marginTop: "2%", display: 'flex', flexDirection: "column" }}>
+                                        <Form onSubmit={this.submitComment}>
+                                            <Form.Group >
+                                                <Form.Control as="textarea" rows="3" name="comment" onChange={(event) => this.handleUserInput(event)}
+                                                    placeholder="Type your comment here." />
+                                            </Form.Group>
+                                            <Button style={{ justifyItems: "center" }} variant="dark" type="submit" disabled={!this.state.validComment}>
+                                                Comment
+                                            </Button>
+                                        </Form>
+                                        {this.renderComments()}
+                                    </div>
+                                    {/* {this.renderProjects(data, 'followed')} */}
+                                </Tab>
+                            </Tabs>
+                        </Col>
+                    </Row>
                 </Container>
             </div>
         )
@@ -320,7 +445,7 @@ class DisplayProjectDetailsPage extends Component {
     render() {
         if (!this.Auth.loggedIn()) {
             console.log('redirecting to login page');
-            
+
             const { username, orgName, teamName, projName } = this.props.match.params
             this.props.history.push({
                 pathname: '/login',
