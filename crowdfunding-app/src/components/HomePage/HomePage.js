@@ -26,7 +26,9 @@ class HomePage extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            featuredProjects: []
+            featuredProjects: [],
+            search: '',
+            validSearch: false
         }
     }
 
@@ -39,6 +41,33 @@ class HomePage extends Component {
                     featuredProjects: data
                 })
             })
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        console.log(this.state);
+        if (JSON.stringify(prevState) !== JSON.stringify(this.state)) {
+            const { search } = this.state
+            let isValid = !(search === '')
+            this.setState({
+                validSearch: isValid
+            })
+        }
+    }
+
+    handleUserInput = (e) => {
+        e.preventDefault()
+        const name = e.target.name;
+        const value = e.target.value;
+        console.log(`output: ${name} ${value}`);
+        this.setState({ [name]: value });
+    }
+
+    submitSearch = () => {
+        const { search } = this.state
+        this.props.history.push({
+            pathname: `/explore`,
+            state: { searchString: search }
+        })
     }
 
     renderCarousel = (projects) => {
@@ -76,9 +105,9 @@ class HomePage extends Component {
             <div>
                 <NavbarComp />
                 <div style={{ display: 'flex', justifyContent: 'center', margin: "10px" }}>
-                    <Form inline style={{ textAlign: "center" }}>
-                        <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-                        <Button variant="outline-success">Search</Button>
+                    <Form inline style={{ textAlign: "center" }} onSubmit={this.submitSearch}>
+                        <FormControl type="text" placeholder="Search" name="search" className="mr-sm-2" onChange={(event) => this.handleUserInput(event)}/>
+                        <Button variant="outline-success"  type="submit" disabled={!this.state.validSearch}>Search</Button>
                     </Form>
                 </div>
                 <Divider color="gray" />

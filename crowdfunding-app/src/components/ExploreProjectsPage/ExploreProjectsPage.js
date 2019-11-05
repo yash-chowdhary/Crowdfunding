@@ -10,35 +10,69 @@ class ExploreProjectsPage extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            projectData: []
+            projectData: [],
+            hasSearchedSomething: false,
+            searchString: ''
         }
     }
 
     componentDidMount() {
-        axios.get('http://localhost:3003/allProjects')
-            .then(response => {
-                console.log(response.data);
-                this.setState({
-                    projectData: response.data
+        const locationState = this.props.location.state
+        let searchString = null
+        if (locationState !== undefined) {
+            searchString = locationState.searchString
+            console.log(`search for projects containing ${searchString}`)
+        }
+        if (searchString === undefined || searchString === null) {
+            axios.get('http://localhost:3003/allProjects')
+                .then(response => {
+                    console.log(response.data);
+                    this.setState({
+                        projectData: response.data
+                    })
                 })
-            })
-            .catch(error => {
-                alert(error)
-            })
+                .catch(error => {
+                    alert(error)
+                })
+        } else {
+            axios.get(`http://localhost:3003/searchProjects/${searchString}`)
+                .then(response => {
+                    console.log(response.data)
+                    this.setState({
+                        projectData: response.data,
+                        hasSearchedSomething: true,
+                        searchString: searchString
+                    })
+                })
+                .catch(error => {
+                    alert(error)
+                })
+        }
     }
 
     renderProjectList = (details) => {
+        let renderText = "There are no projects to see."
+        if (details.length === 0 && this.state.hasSearchedSomething) {
+            renderText = `We couldn't find any projects containing the keyphrase "${this.state.searchString}".`
+        }
+
         if (details.length === 0) {
             var link = <a href="/start">here</a>;
             return (
-                <div style={{display:'flex', marginTop: "5%", justifyContent: 'center', alignContent: "center"}}>
-                    <h3>There are no projects to see. Click {link} to start a new project!</h3> 
+                // <div style={{ display: 'flex', marginTop: "5%", flexDirection: "column ", justifyContent: 'center', alignContent: "center" }}>
+                <div style={{ textAlign: "center", marginTop: "5%"}}>
+                    <div>
+                        <h4>{renderText} </h4>
+                    </div>
+                    <div>
+                        <h4>Click {link} to start a new project!</h4>
+                    </div>
                 </div>
             )
         }
         return (
             <div style={{ marginTop: "3%" }}>
-                <div style={{marginLeft:"20px"}}>
+                <div style={{ marginLeft: "20px" }}>
                     <h3>Projects: </h3>
                 </div>
                 {/* <ol>
@@ -67,8 +101,8 @@ class ExploreProjectsPage extends Component {
                                         {proj.projname}
                                     </Link>
                                     <h6>{proj.description}</h6>
-                                    <h6>Creator: {proj.username} </h6>
-                                    <h6>Org: {proj.orgname === '$Independent$'? 'Independent': proj.orgname} </h6>
+                                    <h6>Creator: @{proj.username} </h6>
+                                    <h6>Org: {proj.orgname === '$Independent$' ? 'Independent' : proj.orgname} </h6>
                                     <h6>Category: {proj.categories}</h6>
                                 </div>
                             </ListGroup.Item>

@@ -7,6 +7,7 @@ import LoginPage from './components/LoginPage/LoginPage'
 import SignUpPage from './components/SignUpPage/SignUpPage'
 import StartProjectPage from './components/StartProjectPage/StartProjectPage'
 import DisplayProjectDetailsPage from './components/DisplayProjectDetailsPage/DisplayProjectDetailsPage'
+import EditProjectDetailsPage from './components/EditProjectDetailsPage/EditProjectDetailsPage'
 import FundProjectPage from './components/FundProjectPage/FundProjectPage'
 import UserProfilePage from './components/UserProfilePage/UserProfilePage'
 import ExploreProjectsPage from './components/ExploreProjectsPage/ExploreProjectsPage'
@@ -21,7 +22,7 @@ const routing = (
             <Route exact path="/login" component={LoginPage} />
             <Route path="/signup" component={SignUpPage} />
             <Route path="/start" component={StartProjectPage} />
-            {/* <Route path="/projects/:username/:orgName/:teamName/:projName/edit" component={EditProjectDetailsPage} /> */}
+            <Route path="/editproject/:username/:orgname/:teamname/:projname" component={EditProjectDetailsPage} />
             <Route path="/projects/:username/:orgName/:teamName/:projName" component={DisplayProjectDetailsPage} />
             <Route path="/explore" component={ExploreProjectsPage} />
             <Route path="/fund/:username/:orgName/:teamName/:projName" component={FundProjectPage} />

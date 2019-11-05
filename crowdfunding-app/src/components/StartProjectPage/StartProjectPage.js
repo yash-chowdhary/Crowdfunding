@@ -56,8 +56,14 @@ class StartProjectPage extends Component {
         }
         axios.post('http://localhost:3003/start', data)
         .then((response) => {
+            // let details  = {
+            //     username: tokenData.username,
+            //     orgname: org,
+            //     teamname: team,
+            //     projname: title
+            // }
             this.props.history.push({
-                pathname:`/projects/${tokenData.username}/${org}/${team}/${title}/edit`,
+                pathname:`/editproject/${tokenData.username}/${org}/${team}/${title}`,
             })
         })
         .catch((error) => {

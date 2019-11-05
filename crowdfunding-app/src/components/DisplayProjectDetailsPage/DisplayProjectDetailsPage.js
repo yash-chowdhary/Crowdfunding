@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { withRouter } from 'react-router-dom'
-import { Link, BrowserRouter as Router, Switch, Route } from "react-router-dom"
+import { Link, BrowserRouter as Router, Switch, Route, withRouter } from "react-router-dom"
 import { Container, Row, Col, Button, ProgressBar, Tab, Tabs, Form, Card } from 'react-bootstrap';
 import AuthHelperMethods from '../AuthHelperMethods';
 import NavbarComp from '../NavBar/NavBar'
@@ -44,7 +43,6 @@ class DisplayProjectDetailsPage extends Component {
         e.preventDefault()
         const name = e.target.name;
         const value = e.target.value;
-        console.log(`output: ${name} ${value}`);
         this.setState({ [name]: value });
     }
 
@@ -249,7 +247,7 @@ class DisplayProjectDetailsPage extends Component {
             return null;
         } else {
             return (
-                <Button style={{ width: "100%", border: "1px solid black" }} variant="Light" onClick={this.followUnfollowProject}>
+                <Button style={{ width: "100%", border: "1px solid black", marginTop: "2%" }} variant="Light" onClick={this.followUnfollowProject}>
                     {renderText}
                 </Button>
             )
@@ -269,6 +267,25 @@ class DisplayProjectDetailsPage extends Component {
         )
     }
 
+    renderDeleteComment = (commentObj) => {
+        if (commentObj.commentor === this.Auth.getTokenData().username) {
+            return (<Button variant="danger" onClick={() => this.deleteComment(commentObj)}>
+                Delete
+            </Button>)
+        }
+    }
+
+    deleteComment = (commentObj) => {
+        axios.delete(`http://localhost:3003/comment/${commentObj.commentor}/${commentObj.timestamp}`)
+            .then(response => {
+                console.log(response.data);
+                window.location.reload()
+            })
+            .catch(error => {
+                alert(error.response.data)
+            })
+    }
+
     renderComments = () => {
         let comments = this.state.projectComments;
         return (
@@ -285,6 +302,7 @@ class DisplayProjectDetailsPage extends Component {
                                 <Card.Body>
                                     {commentObj.comment}
                                 </Card.Body>
+                                {this.renderDeleteComment(commentObj)}
                             </Card.Body>
                         </Card>
                     })
@@ -311,6 +329,23 @@ class DisplayProjectDetailsPage extends Component {
         return moment.duration(deadlineObj.diff(currentDateObj)).asDays();
     }
 
+    redirectToEditPage = (details) => {
+        this.props.history.push({
+            pathname: `/editproject/${details.username}/${details.orgname}/${details.teamname}/${details.projname}`,
+            // state: { data: details }
+        })
+    }
+
+    renderEditProject = (details) => {
+        let curUser = this.Auth.getTokenData().username
+        if (details.username !== curUser) {
+            return null
+        }
+        return <Button style={{ width: "100%" }} variant="primary" onClick={() => this.redirectToEditPage(details)}>
+            Edit Project
+        </Button>
+    }
+
     renderBackOrStatus = (details) => {
         console.log(details.status);
 
@@ -322,7 +357,8 @@ class DisplayProjectDetailsPage extends Component {
                         <p className="generic-p-stats">day{this.getDaysToDeadline(details) > 1 ? 's' : null} to go</p>
                     </div>
 
-                    <Button style={{ width: "100%" }} variant="success" type="submit" onClick={this.redirectToFundPage}>
+                    {this.renderEditProject(details)}
+                    <Button style={{ width: "100%", marginTop:"2%" }} variant="success" type="submit" onClick={this.redirectToFundPage}>
                         Back this project
                     </Button>
                     {this.renderWithdrawButton(details)}
@@ -381,7 +417,7 @@ class DisplayProjectDetailsPage extends Component {
                         <Col>
                             <ProgressBar variant="success" now={(details.curfunds / details.goal) * 100} />
                             <div>
-                                <div style={{ marginBottom: "5%" }}>
+                                <div style={{ marginBottom: "3%" }}>
                                     <div className="div-stats">
                                         <h3 className="curfunds">S$ {details.curfunds} </h3>
                                         <p className="goal">pledged of S$ {details.goal} goal </p>

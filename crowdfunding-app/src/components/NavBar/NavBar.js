@@ -54,7 +54,7 @@ class NavbarComp extends Component {
 
     render() {
         return (
-            <div>
+            // <div>
                 <Navbar bg="dark" expand="lg" variant="dark" sticky="top" >
                     <Navbar.Brand href="/"><img src={fundit} alt="FundIt Logo"
                         style={{ width: 120, height: 37 }}
@@ -69,7 +69,7 @@ class NavbarComp extends Component {
                     </Navbar.Collapse>
                 </Navbar>
 
-            </div>
+            // </div>
         )
     }
 };
