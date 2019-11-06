@@ -33,7 +33,7 @@ class HomePage extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:3003/getFeaturedProjects')
+        axios.get('https://crowdfunding-2102.herokuapp.com/api/v1/getFeaturedProjects')
             .then(response => {
                 let data = response.data
                 console.log(data)

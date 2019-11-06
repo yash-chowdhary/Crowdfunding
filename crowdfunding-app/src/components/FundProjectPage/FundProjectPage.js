@@ -46,7 +46,7 @@ class FundProjectPage extends Component {
             projname: this.state.projectData.projname
         }
 
-        axios.post('http://localhost:3003/fund', data)
+        axios.post('https://crowdfunding-2102.herokuapp.com/api/v1/fund', data)
             .then(response => {
                 let details = this.state.projectData
                 console.log(response)

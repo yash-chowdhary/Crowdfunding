@@ -32,9 +32,16 @@ const routing = (
     </Router>
   )
 
-ReactDOM.render(
-    routing
-    , document.getElementById('root'));
+
+const rootElement = document.getElementById("root");
+if (rootElement.hasChildNodes()) {
+  ReactDOM.hydrate(routing, rootElement);
+} else {
+  ReactDOM.render(routing, rootElement);
+}
+// ReactDOM.render(
+//     routing
+//     , document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

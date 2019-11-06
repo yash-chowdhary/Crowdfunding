@@ -24,7 +24,7 @@ class ExploreProjectsPage extends Component {
             console.log(`search for projects containing ${searchString}`)
         }
         if (searchString === undefined || searchString === null) {
-            axios.get('http://localhost:3003/allProjects')
+            axios.get('https://crowdfunding-2102.herokuapp.com/api/v1/allProjects')
                 .then(response => {
                     console.log(response.data);
                     this.setState({
@@ -35,7 +35,7 @@ class ExploreProjectsPage extends Component {
                     alert(error)
                 })
         } else {
-            axios.get(`http://localhost:3003/searchProjects/${searchString}`)
+            axios.get(`https://crowdfunding-2102.herokuapp.com/api/v1/searchProjects/${searchString}`)
                 .then(response => {
                     console.log(response.data)
                     this.setState({

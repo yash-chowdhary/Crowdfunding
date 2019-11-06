@@ -57,7 +57,7 @@ class DisplayProjectDetailsPage extends Component {
             projname: details.projname,
             comment: this.state.comment
         }
-        axios.post('http://localhost:3003/comment', postData)
+        axios.post('https://crowdfunding-2102.herokuapp.com/api/v1/comment', postData)
             .then(response => {
                 console.log(response.data);
                 this.props.history.push(`/projects/${details.username}/${details.orgname}/${details.teamname}/${details.projname}`)
@@ -86,7 +86,7 @@ class DisplayProjectDetailsPage extends Component {
         const { username, orgName, teamName, projName } = this.props.match.params
 
 
-        axios.get(`http://localhost:3003/user/${curUser}`)
+        axios.get(`https://crowdfunding-2102.herokuapp.com/api/v1/user/${curUser}`)
             .then(response => {
                 let data = response.data
                 console.log('user data:')
@@ -120,10 +120,10 @@ class DisplayProjectDetailsPage extends Component {
                 }
             })
 
-        console.log(`http://localhost:3003/projects/${username}/${orgName}/${teamName}/${projName}`);
+        console.log(`https://crowdfunding-2102.herokuapp.com/api/v1/projects/${username}/${orgName}/${teamName}/${projName}`);
 
         var postData = null
-        axios.get(`http://localhost:3003/projects/${username}/${orgName}/${teamName}/${projName}`)
+        axios.get(`https://crowdfunding-2102.herokuapp.com/api/v1/projects/${username}/${orgName}/${teamName}/${projName}`)
             .then((response) => {
                 console.log((response.data));
                 let data = response.data;
@@ -149,7 +149,7 @@ class DisplayProjectDetailsPage extends Component {
                     projectData: data
                 })
                 if (postData !== null) {
-                    return axios.post(`http://localhost:3003/setStatus`, postData)
+                    return axios.post(`https://crowdfunding-2102.herokuapp.com/api/v1/setStatus`, postData)
                 }
             })
             .then(response => {
@@ -159,7 +159,7 @@ class DisplayProjectDetailsPage extends Component {
                 alert(error)
             })
 
-        axios.get(`http://localhost:3003/comments/${username}/${orgName}/${teamName}/${projName}`)
+        axios.get(`https://crowdfunding-2102.herokuapp.com/api/v1/comments/${username}/${orgName}/${teamName}/${projName}`)
             .then(response => {
                 let comments = response.data
                 this.setState({
@@ -175,7 +175,7 @@ class DisplayProjectDetailsPage extends Component {
         let data = this.state.projectData;
         let curUser = this.Auth.getTokenData().username;
         if (this.state.follows) {
-            axios.delete(`http://localhost:3003/follow/${curUser}/${data.username}/${data.orgname}/${data.teamname}/${data.projname}`)
+            axios.delete(`https://crowdfunding-2102.herokuapp.com/api/v1/follow/${curUser}/${data.username}/${data.orgname}/${data.teamname}/${data.projname}`)
                 .then(response => {
                     console.log('unfollowed');
                     let curState = this.state.follows
@@ -194,7 +194,7 @@ class DisplayProjectDetailsPage extends Component {
                 teamname: data.teamname,
                 projname: data.projname
             }
-            axios.post('http://localhost:3003/follow', postData)
+            axios.post('https://crowdfunding-2102.herokuapp.com/api/v1/follow', postData)
                 .then(response => {
                     console.log('followed');
                     let curState = this.state.follows
@@ -218,7 +218,7 @@ class DisplayProjectDetailsPage extends Component {
             teamname: data.teamname,
             projname: data.projname
         }
-        axios.post(`http://localhost:3003/withdraw`, postData)
+        axios.post(`https://crowdfunding-2102.herokuapp.com/api/v1/withdraw`, postData)
             .then(response => {
                 console.log(response.data);
                 console.log(response.data.amount);
@@ -276,7 +276,7 @@ class DisplayProjectDetailsPage extends Component {
     }
 
     deleteComment = (commentObj) => {
-        axios.delete(`http://localhost:3003/comment/${commentObj.commentor}/${commentObj.timestamp}`)
+        axios.delete(`https://crowdfunding-2102.herokuapp.com/api/v1/comment/${commentObj.commentor}/${commentObj.timestamp}`)
             .then(response => {
                 console.log(response.data);
                 window.location.reload()
