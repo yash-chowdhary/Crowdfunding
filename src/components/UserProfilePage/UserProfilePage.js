@@ -19,7 +19,7 @@ class UserProfilePage extends Component {
         console.log('mounted');
         const { username } = this.props.match.params
 
-        axios.get(`https://crowdfunding-2102.herokuapp.com/api/v1/user/${username}`)
+        axios.get(`http://localhost:3003/api/v1/user/${username}`)
             .then(response => {
                 console.log(response.data)
                 this.setState({
@@ -49,9 +49,53 @@ class UserProfilePage extends Component {
                         {
                             data[type].map((proj, index) => {
                                 return <li key={index}>
-                                    <Link to={`/projects/${proj.creator}/${proj.orgname}/${proj.teamname}/${proj.projname}`} >
-                                        {proj.projname}
-                                    </Link>
+                                    <div>
+                                        <Link to={`/projects/${proj.creator}/${proj.orgname}/${proj.teamname}/${proj.projname}`} >
+                                            {proj.projname}
+                                        </Link>
+                                        {
+                                            type === 'backed'
+                                                ? <div style={{ marginTop: "1%" }}>
+                                                    <p style={{ marginTop: "0" }}> <b>Amount Funded: </b> S$ {proj.amount} </p>
+                                                </div>
+                                                : null
+                                        }
+                                    </div>
+                                </li>
+                            })
+                        }
+                    </ol>
+                </div>
+            )
+        }
+    }
+
+    renderBenefits = (data) => {
+        if (data !== null) {
+            if (data.benefits.length === 0) {
+                return (
+                    <div style={{ textAlign: "center", marginTop: "2%" }}>
+                        <h5>
+                            {`This user hasn't received any benefits through backing projects.`}
+                        </h5>
+                    </div>
+                )
+            }
+            return (
+                <div style={{ marginTop: "2%" }}>
+                    <ol>
+                        {
+                            data.benefits.map((proj, index) => {
+                                return <li key={index}>
+                                    <div>
+                                        <Link to={`/projects/${proj.creator}/${proj.orgname}/${proj.teamname}/${proj.projname}`} >
+                                            {proj.projname}
+                                        </Link>
+                                        <div style={{ marginTop: "1%" }}>
+                                            <p style={{ marginBottom: "0" }}> <b>Benefit: </b> {proj.benefit} </p>
+                                            <p style={{ marginTop: "0" }}> <b>Amount Funded: </b> S$ {proj.amountfunded} </p>
+                                        </div>
+                                    </div>
                                 </li>
                             })
                         }
@@ -91,6 +135,9 @@ class UserProfilePage extends Component {
                                             </Tab>
                                             <Tab eventKey="following" title="Following">
                                                 {this.renderProjects(data, 'followed')}
+                                            </Tab>
+                                            <Tab eventKey="benefits" title="Benefits Received">
+                                                {this.renderBenefits(data)}
                                             </Tab>
                                         </Tabs>
                                     </div>

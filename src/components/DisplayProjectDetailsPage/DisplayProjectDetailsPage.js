@@ -35,7 +35,8 @@ class DisplayProjectDetailsPage extends Component {
             hasFunded: false,
             validComment: false,
             comment: '',
-            projectComments: []
+            projectComments: [],
+            projectBenefits: []
         }
     }
 
@@ -57,7 +58,7 @@ class DisplayProjectDetailsPage extends Component {
             projname: details.projname,
             comment: this.state.comment
         }
-        axios.post('https://crowdfunding-2102.herokuapp.com/api/v1/comment', postData)
+        axios.post('http://localhost:3003/api/v1/comment', postData)
             .then(response => {
                 console.log(response.data);
                 this.props.history.push(`/projects/${details.username}/${details.orgname}/${details.teamname}/${details.projname}`)
@@ -86,7 +87,7 @@ class DisplayProjectDetailsPage extends Component {
         const { username, orgName, teamName, projName } = this.props.match.params
 
 
-        axios.get(`https://crowdfunding-2102.herokuapp.com/api/v1/user/${curUser}`)
+        axios.get(`http://localhost:3003/api/v1/user/${curUser}`)
             .then(response => {
                 let data = response.data
                 console.log('user data:')
@@ -120,10 +121,10 @@ class DisplayProjectDetailsPage extends Component {
                 }
             })
 
-        console.log(`https://crowdfunding-2102.herokuapp.com/api/v1/projects/${username}/${orgName}/${teamName}/${projName}`);
+        console.log(`http://localhost:3003/api/v1/projects/${username}/${orgName}/${teamName}/${projName}`);
 
         var postData = null
-        axios.get(`https://crowdfunding-2102.herokuapp.com/api/v1/projects/${username}/${orgName}/${teamName}/${projName}`)
+        axios.get(`http://localhost:3003/api/v1/projects/${username}/${orgName}/${teamName}/${projName}`)
             .then((response) => {
                 console.log((response.data));
                 let data = response.data;
@@ -149,7 +150,7 @@ class DisplayProjectDetailsPage extends Component {
                     projectData: data
                 })
                 if (postData !== null) {
-                    return axios.post(`https://crowdfunding-2102.herokuapp.com/api/v1/setStatus`, postData)
+                    return axios.post(`http://localhost:3003/api/v1/setStatus`, postData)
                 }
             })
             .then(response => {
@@ -159,11 +160,22 @@ class DisplayProjectDetailsPage extends Component {
                 alert(error)
             })
 
-        axios.get(`https://crowdfunding-2102.herokuapp.com/api/v1/comments/${username}/${orgName}/${teamName}/${projName}`)
+        axios.get(`http://localhost:3003/api/v1/comments/${username}/${orgName}/${teamName}/${projName}`)
             .then(response => {
                 let comments = response.data
                 this.setState({
                     projectComments: comments
+                })
+            })
+            .catch(error => {
+                alert(error)
+            })
+
+        axios.get(`http://localhost:3003/api/v1/benefits/${username}/${orgName}/${teamName}/${projName}`)
+            .then(response => {
+                let benefits = response.data
+                this.setState({
+                    projectBenefits: benefits
                 })
             })
             .catch(error => {
@@ -175,7 +187,7 @@ class DisplayProjectDetailsPage extends Component {
         let data = this.state.projectData;
         let curUser = this.Auth.getTokenData().username;
         if (this.state.follows) {
-            axios.delete(`https://crowdfunding-2102.herokuapp.com/api/v1/follow/${curUser}/${data.username}/${data.orgname}/${data.teamname}/${data.projname}`)
+            axios.delete(`http://localhost:3003/api/v1/follow/${curUser}/${data.username}/${data.orgname}/${data.teamname}/${data.projname}`)
                 .then(response => {
                     console.log('unfollowed');
                     let curState = this.state.follows
@@ -194,7 +206,7 @@ class DisplayProjectDetailsPage extends Component {
                 teamname: data.teamname,
                 projname: data.projname
             }
-            axios.post('https://crowdfunding-2102.herokuapp.com/api/v1/follow', postData)
+            axios.post('http://localhost:3003/api/v1/follow', postData)
                 .then(response => {
                     console.log('followed');
                     let curState = this.state.follows
@@ -218,7 +230,7 @@ class DisplayProjectDetailsPage extends Component {
             teamname: data.teamname,
             projname: data.projname
         }
-        axios.post(`https://crowdfunding-2102.herokuapp.com/api/v1/withdraw`, postData)
+        axios.post(`http://localhost:3003/api/v1/withdraw`, postData)
             .then(response => {
                 console.log(response.data);
                 console.log(response.data.amount);
@@ -226,7 +238,7 @@ class DisplayProjectDetailsPage extends Component {
 
                 setTimeout(() => {
                     window.location.reload()
-                }, 3000)
+                }, 1000)
 
             })
             .catch(error => {
@@ -276,7 +288,7 @@ class DisplayProjectDetailsPage extends Component {
     }
 
     deleteComment = (commentObj) => {
-        axios.delete(`https://crowdfunding-2102.herokuapp.com/api/v1/comment/${commentObj.commentor}/${commentObj.timestamp}`)
+        axios.delete(`http://localhost:3003/api/v1/comment/${commentObj.commentor}/${commentObj.timestamp}`)
             .then(response => {
                 console.log(response.data);
                 window.location.reload()
@@ -311,6 +323,26 @@ class DisplayProjectDetailsPage extends Component {
         )
     }
 
+    renderBenefits = () => {
+        let benefits = this.state.projectBenefits;
+        return (
+            <div style={{ marginTop: "2%" }}>
+                {
+                    benefits.map((benefitObj, index) => {
+                        return <Card style={{ marginTop: "1%" }} key={index}>
+                            <Card.Body>
+                                <Card.Title>Pledge above S$ {benefitObj.minamount}</Card.Title>
+                                <Card.Text>
+                                    Benefit: {benefitObj.benefit}
+                                </Card.Text>
+                            </Card.Body>
+                        </Card>
+                    })
+                }
+            </div>
+        )
+    }
+
     redirectToFundPage = () => {
         const details = this.state.projectData
         details.backerName = this.Auth.getTokenData().name;
@@ -326,7 +358,10 @@ class DisplayProjectDetailsPage extends Component {
         let currentDateObj = moment(currentDateString).tz("Asia/Singapore")
 
         var deadlineObj = moment(details.deadline).tz("Asia/Singapore")
-        return moment.duration(deadlineObj.diff(currentDateObj)).asDays();
+        console.log('herererererer')
+        console.log(`days: ${Math.floor(moment.duration(deadlineObj.diff(currentDateObj)).asDays())}`);
+
+        return Math.floor(moment.duration(deadlineObj.diff(currentDateObj)).asDays());
     }
 
     redirectToEditPage = (details) => {
@@ -358,7 +393,7 @@ class DisplayProjectDetailsPage extends Component {
                     </div>
 
                     {this.renderEditProject(details)}
-                    <Button style={{ width: "100%", marginTop:"2%" }} variant="success" type="submit" onClick={this.redirectToFundPage}>
+                    <Button style={{ width: "100%", marginTop: "2%" }} variant="success" type="submit" onClick={this.redirectToFundPage}>
                         Back this project
                     </Button>
                     {this.renderWithdrawButton(details)}
@@ -439,7 +474,7 @@ class DisplayProjectDetailsPage extends Component {
                     </Row>
                 </Container>
 
-                <Container>
+                <Container style={{marginBottom:"5%"}}>
                     <Row>
                         <Col>
                             <Divider color="gray" />
@@ -449,11 +484,9 @@ class DisplayProjectDetailsPage extends Component {
                                     <div style={{ marginTop: "3%" }}>
                                         <p>{this.state.projectData.about === null ? noProjectAbout : this.state.projectData.about}</p>
                                     </div>
-                                    {/* {this.renderProjects(data, 'created')} */}
                                 </Tab>
-                                <Tab eventKey="rewards" title="Rewards">
-                                    <h3>Rewards</h3>
-                                    {/* {this.renderProjects(data, 'backed')} */}
+                                <Tab eventKey="benefits" title="Benefits">
+                                    {this.renderBenefits()}
                                 </Tab>
                                 <Tab eventKey="comments" title="Comments">
                                     <div style={{ marginTop: "2%", display: 'flex', flexDirection: "column" }}>

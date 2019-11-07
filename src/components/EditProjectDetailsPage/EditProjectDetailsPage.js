@@ -56,7 +56,7 @@ class EditProjectDetailsPage extends Component {
     }
 
     deleteProject = (details) => {
-        axios.delete(`https://crowdfunding-2102.herokuapp.com/api/v1/project/${details.username}/${details.orgname}/${details.teamname}/${details.projname}`)
+        axios.delete(`http://localhost:3003/api/v1/project/${details.username}/${details.orgname}/${details.teamname}/${details.projname}`)
             .then(response => {
                 alert('Project deleted. Redirecting you to the home page')
                 this.redirectToHome()
@@ -75,7 +75,7 @@ class EditProjectDetailsPage extends Component {
             projname: details.projname,
             about: this.state.about
         }
-        axios.post('https://crowdfunding-2102.herokuapp.com/api/v1/editProject', postData)
+        axios.post('http://localhost:3003/api/v1/editProject', postData)
             .then(response => {
                 console.log('updated!');
                 alert('Project edited. Redirecting you to the project details page')
@@ -108,7 +108,7 @@ class EditProjectDetailsPage extends Component {
                                 </Form.Group>
                                 <div style={{ textAlign: "center" }}>
                                     <Button style={{ justifyItems: "center" }} variant="success" onClick={this.editProject} disabled={!this.state.isValidAbout}>
-                                        Edit Project
+                                        Save
                                     </Button>
                                     <Button style={{ justifyItems: "center", marginLeft: "2%" }} variant="danger" onClick={() => this.deleteProject(details)}>
                                         Delete Project

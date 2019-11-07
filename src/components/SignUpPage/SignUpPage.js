@@ -53,7 +53,7 @@ class SignUpPage extends Component {
             }
 
             console.log(data)
-            axios.post('https://crowdfunding-2102.herokuapp.com/api/v1/signup', data)
+            axios.post('http://localhost:3003/api/v1/signup', data)
                 .then((response) => {
                     this.props.history.push("/login")
 

@@ -13,7 +13,7 @@ export default class AuthHelperMethods {
         }
         
         // Get a token from api server using the fetch api
-        return axios.post(`https://crowdfunding-2102.herokuapp.com/api/v1/login`, data)
+        return axios.post(`http://localhost:3003/api/v1/login`, data)
         .then(res => {
             console.log(res)
             this.setToken(res.data.token) // Setting the token in localStorage
