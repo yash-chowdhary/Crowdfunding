@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom'
 import { Link, BrowserRouter as Router, Switch, Route } from "react-router-dom"
-import { Tab, Tabs, Container, Row, Col } from 'react-bootstrap';
+import { Tab, Tabs, Container, Row, Col, ListGroup } from 'react-bootstrap';
 import AuthHelperMethods from '../AuthHelperMethods';
 import NavbarComp from '../NavBar/NavBar'
 
@@ -45,10 +45,10 @@ class UserProfilePage extends Component {
             }
             return (
                 <div style={{ marginTop: "2%" }}>
-                    <ol>
+                    <ListGroup>
                         {
                             data[type].map((proj, index) => {
-                                return <li key={index}>
+                                return <ListGroup.Item key={index}>
                                     <div>
                                         <Link to={`/projects/${proj.creator}/${proj.orgname}/${proj.teamname}/${proj.projname}`} >
                                             {proj.projname}
@@ -56,15 +56,15 @@ class UserProfilePage extends Component {
                                         {
                                             type === 'backed'
                                                 ? <div style={{ marginTop: "1%" }}>
-                                                    <p style={{ marginTop: "0" }}> <b>Amount Funded: </b> S$ {proj.amount} </p>
+                                                    <p style={{ marginTop: "0",marginBottom:"0" }}> <b>Amount Funded: </b> S$ {proj.amount} </p>
                                                 </div>
                                                 : null
                                         }
                                     </div>
-                                </li>
+                                </ListGroup.Item>
                             })
                         }
-                    </ol>
+                    </ListGroup>
                 </div>
             )
         }
@@ -83,23 +83,23 @@ class UserProfilePage extends Component {
             }
             return (
                 <div style={{ marginTop: "2%" }}>
-                    <ol>
+                    <ListGroup>
                         {
                             data.benefits.map((proj, index) => {
-                                return <li key={index}>
+                                return <ListGroup.Item key={index}>
                                     <div>
                                         <Link to={`/projects/${proj.creator}/${proj.orgname}/${proj.teamname}/${proj.projname}`} >
                                             {proj.projname}
                                         </Link>
                                         <div style={{ marginTop: "1%" }}>
                                             <p style={{ marginBottom: "0" }}> <b>Benefit: </b> {proj.benefit} </p>
-                                            <p style={{ marginTop: "0" }}> <b>Amount Funded: </b> S$ {proj.amountfunded} </p>
+                                            <p style={{ marginTop: "0",marginBottom:"0" }}> <b>Amount Funded: </b> S$ {proj.amountfunded} </p>
                                         </div>
                                     </div>
-                                </li>
+                                </ListGroup.Item>
                             })
                         }
-                    </ol>
+                    </ListGroup>
                 </div>
             )
         }
