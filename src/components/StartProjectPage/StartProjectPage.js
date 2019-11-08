@@ -60,7 +60,7 @@ class StartProjectPage extends Component {
             alert(`Please enter a date in the future, i.e. after ${moment(currentDate).format("DD-MM-YYYY")}`)
             return
         }
-        axios.post('http://localhost:3003/api/v1/start', data)
+        axios.post('https://crowdfunding-2102.herokuapp.com/api/v1/start', data)
             .then((response) => {
                 // let details  = {
                 //     username: tokenData.username,
@@ -80,7 +80,7 @@ class StartProjectPage extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:3003/api/v1/categories')
+        axios.get('https://crowdfunding-2102.herokuapp.com/api/v1/categories')
             .then((response) => {
                 console.log(response.data);
                 this.setState({

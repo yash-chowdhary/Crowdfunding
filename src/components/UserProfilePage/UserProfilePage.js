@@ -19,7 +19,7 @@ class UserProfilePage extends Component {
         console.log('mounted');
         const { username } = this.props.match.params
 
-        axios.get(`http://localhost:3003/api/v1/user/${username}`)
+        axios.get(`https://crowdfunding-2102.herokuapp.com/api/v1/user/${username}`)
             .then(response => {
                 console.log(response.data)
                 this.setState({
